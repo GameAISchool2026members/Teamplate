@@ -1,5 +1,11 @@
 {
   "dependencies": {
+    "com.github.homuler.mediapipe": {
+      "version": "file:com.github.homuler.mediapipe",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.unity.2d.animation": {
       "version": "15.1.0",
       "depth": 0,
@@ -113,22 +119,20 @@
       },
       "url": "https://packages.unity.com"
     },
-    "com.unity.ai.inference": {
-      "version": "2.6.1",
-      "depth": 0,
+    "com.unity.barracuda": {
+      "version": "3.0.2",
+      "depth": 1,
       "source": "registry",
       "dependencies": {
-        "com.unity.burst": "1.8.17",
-        "com.unity.dt.app-ui": "1.3.6",
-        "com.unity.collections": "2.4.3",
-        "com.unity.nuget.newtonsoft-json": "3.2.1",
+        "com.unity.burst": "1.6.0",
+        "com.unity.modules.jsonserialize": "1.0.0",
         "com.unity.modules.imageconversion": "1.0.0"
       },
       "url": "https://packages.unity.com"
     },
     "com.unity.burst": {
       "version": "1.8.29",
-      "depth": 1,
+      "depth": 2,
       "source": "registry",
       "dependencies": {
         "com.unity.mathematics": "1.2.1",
@@ -153,18 +157,6 @@
         "com.unity.test-framework": "1.4.6",
         "com.unity.test-framework.performance": "3.2.0"
       }
-    },
-    "com.unity.dt.app-ui": {
-      "version": "2.1.7",
-      "depth": 1,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.modules.physics": "1.0.0",
-        "com.unity.modules.androidjni": "1.0.0",
-        "com.unity.modules.uielements": "1.0.0",
-        "com.unity.modules.screencapture": "1.0.0"
-      },
-      "url": "https://packages.unity.com"
     },
     "com.unity.ext.nunit": {
       "version": "2.1.0",
@@ -256,24 +248,6 @@
         "com.unity.render-pipelines.core": "17.5.0"
       }
     },
-    "com.unity.sdk.linux-arm64": {
-      "version": "1.1.0",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.sysroot.base": "1.1.0"
-      },
-      "url": "https://packages.unity.com"
-    },
-    "com.unity.sdk.linux-x86_64": {
-      "version": "1.1.0",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.sysroot.base": "1.1.0"
-      },
-      "url": "https://packages.unity.com"
-    },
     "com.unity.searcher": {
       "version": "4.9.4",
       "depth": 2,
@@ -289,13 +263,6 @@
         "com.unity.render-pipelines.core": "17.5.0",
         "com.unity.searcher": "4.9.3"
       }
-    },
-    "com.unity.sysroot.base": {
-      "version": "1.1.0",
-      "depth": 1,
-      "source": "registry",
-      "dependencies": {},
-      "url": "https://packages.unity.com"
     },
     "com.unity.test-framework": {
       "version": "1.7.0",
@@ -329,15 +296,6 @@
       },
       "url": "https://packages.unity.com"
     },
-    "com.unity.toolchain.linux-x86_64-linux": {
-      "version": "1.1.0",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.sysroot.base": "1.1.0"
-      },
-      "url": "https://packages.unity.com"
-    },
     "com.unity.ugui": {
       "version": "2.5.0",
       "depth": 0,
@@ -359,6 +317,103 @@
         "com.unity.modules.jsonserialize": "1.0.0"
       },
       "url": "https://packages.unity.com"
+    },
+    "de.uniulm.uniteye": {
+      "version": "file:UnitEye",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.unity.barracuda": "2.0.0",
+        "com.unity.nuget.newtonsoft-json": "3.2.1",
+        "com.github.homuler.mediapipe": "0.12.0"
+      }
+    },
+    "jp.ikep.mediapipe.blazepose": {
+      "version": "1.3.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "jp.ikep.mediapipe.posedetection": "1.0.1",
+        "jp.ikep.mediapipe.poselandmark": "1.1.1"
+      },
+      "url": "https://registry.npmjs.com"
+    },
+    "jp.ikep.mediapipe.holistic": {
+      "version": "file:HolisticBarracuda",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.unity.mathematics": "1.2.1",
+        "jp.keijiro.mediapipe.blazeface": "1.1.1",
+        "jp.keijiro.mediapipe.facelandmark": "1.0.0",
+        "jp.keijiro.mediapipe.iris": "1.1.0",
+        "jp.keijiro.mediapipe.blazepalm": "1.0.2",
+        "jp.keijiro.mediapipe.handlandmark": "1.0.1",
+        "jp.ikep.mediapipe.blazepose": "1.3.0"
+      }
+    },
+    "jp.ikep.mediapipe.posedetection": {
+      "version": "1.0.1",
+      "depth": 2,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.barracuda": "2.0.0-pre.3"
+      },
+      "url": "https://registry.npmjs.com"
+    },
+    "jp.ikep.mediapipe.poselandmark": {
+      "version": "1.1.1",
+      "depth": 2,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.barracuda": "2.0.0-pre.3"
+      },
+      "url": "https://registry.npmjs.com"
+    },
+    "jp.keijiro.mediapipe.blazeface": {
+      "version": "1.1.1",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.barracuda": "1.3.3-preview"
+      },
+      "url": "https://registry.npmjs.com"
+    },
+    "jp.keijiro.mediapipe.blazepalm": {
+      "version": "1.0.2",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.barracuda": "1.4.0-preview"
+      },
+      "url": "https://registry.npmjs.com"
+    },
+    "jp.keijiro.mediapipe.facelandmark": {
+      "version": "1.0.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.barracuda": "1.3.3-preview"
+      },
+      "url": "https://registry.npmjs.com"
+    },
+    "jp.keijiro.mediapipe.handlandmark": {
+      "version": "1.0.1",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.barracuda": "1.4.0-preview"
+      },
+      "url": "https://registry.npmjs.com"
+    },
+    "jp.keijiro.mediapipe.iris": {
+      "version": "1.1.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.barracuda": "1.3.3-preview"
+      },
+      "url": "https://registry.npmjs.com"
     },
     "com.unity.modules.accessibility": {
       "version": "1.0.0",
