@@ -241,7 +241,6 @@ Transform:
   m_Children:
   - {fileID: 1032301199}
   - {fileID: 1166184891}
-  - {fileID: 698358929}
   - {fileID: 1080837284}
   - {fileID: 512200095}
   - {fileID: 2081430539}
@@ -419,6 +418,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   moveSpeed: 5
+  rb: {fileID: 0}
+  animator: {fileID: 777672131}
 --- !u!1 &453450570
 GameObject:
   m_ObjectHideFlags: 0
@@ -1419,7 +1420,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 777672129}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 3dcc327a708384866a45e4b38d06a533, type: 2}
   m_CullingMode: 0
@@ -7318,5 +7319,4 @@ SceneRoots:
   - {fileID: 519349383}
   - {fileID: 453450574}
   - {fileID: 2001465109}
-  - {fileID: 913816008}
   - {fileID: 150814205}
