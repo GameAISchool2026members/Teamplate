@@ -63,6 +63,11 @@ public class FlashlightFollow : MonoBehaviour
         }
     }
 
+    public float GetWorldRadius()
+    {
+        return WorldRadiusFromNormalizedRadius(holeRadius);
+    }
+
     void Update()
     {
         if (Keyboard.current[toggleKey].wasPressedThisFrame)
@@ -172,21 +177,20 @@ public class FlashlightFollow : MonoBehaviour
 
         foreach (Collider2D hit in currentOverlaps)
         {
-            if (overlappingColliders.Add(hit))
-                Debug.Log($"Detected inside flashlight view: {hit.gameObject.name} (count={insideCount})");
+            if (hit == null) continue;
+            overlappingColliders.Add(hit);
         }
 
         List<Collider2D> exited = new List<Collider2D>();
         foreach (Collider2D existing in overlappingColliders)
         {
-            if (!currentOverlaps.Contains(existing))
+            if (existing == null || !currentOverlaps.Contains(existing))
                 exited.Add(existing);
         }
 
         foreach (Collider2D exit in exited)
         {
             overlappingColliders.Remove(exit);
-            Debug.Log($"No longer inside flashlight view: {exit.gameObject.name} (count={insideCount})");
         }
     }
 

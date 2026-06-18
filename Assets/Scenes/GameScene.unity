@@ -302,6 +302,10 @@ PrefabInstance:
       propertyPath: holeRadius
       value: 0.02
       objectReference: {fileID: 0}
+    - target: {fileID: 3483701138255736816, guid: ab80341ab8360e74b93c4c946c2afae0, type: 3}
+      propertyPath: useEyeGaze
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8244892936334854327, guid: ab80341ab8360e74b93c4c946c2afae0, type: 3}
       propertyPath: webCamName
       value: HD Pro Webcam C920
@@ -503,7 +507,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &453450571
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1675,9 +1679,12 @@ GameObject:
   - component: {fileID: 925164445}
   - component: {fileID: 925164444}
   - component: {fileID: 925164446}
+  - component: {fileID: 925164448}
+  - component: {fileID: 925164447}
+  - component: {fileID: 925164449}
   m_Layer: 0
   m_Name: Enemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1843,6 +1850,53 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyPatrol
   moveSpeed: 2
+--- !u!95 &925164447
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 925164441}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 375ce690dda1d7b41851c0bf1057cd7b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &925164448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 925164441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66c22295043ed6d408f7f0010699d3a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  timeToKill: 1
+--- !u!114 &925164449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 925164441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d56c2a03ed6bf871f941ec04253a72a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FlashlightVisibleObject
 --- !u!1 &930268997
 GameObject:
   m_ObjectHideFlags: 0
