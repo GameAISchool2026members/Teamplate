@@ -1,21 +1,173 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(CircleCollider2D), typeof(Rigidbody2D))]
 public class FlashlightFollow : MonoBehaviour
 {
+    [Header("Flashlight Material")]
     public Material flashlightMaterial;
+
+    [Header("Flashlight Shape")]
+    [Tooltip("Normalized radius of the visible flashlight hole in UV space.")]
+    [Range(0f, 1f)]
+    public float holeRadius = 0.18f;
+
+    [Header("Collision Detection")]
+    [Tooltip("Layer mask for objects that should be detected inside the flashlight hole.")]
+    public LayerMask detectionMask = ~0;
+
+    [Header("Debug Info")]
+    [Tooltip("Current mouse position in screen pixels.")]
+    public Vector2 mouseScreenPosition;
+    [Tooltip("Current flashlight center in UV coordinates.")]
+    public Vector2 holeCenterUV;
+    [Tooltip("Current world radius of the flashlight collision shape.")]
+    public float worldRadius;
+
+    private CircleCollider2D circleCollider;
+    private Camera mainCamera;
+
+    private readonly HashSet<Collider2D> overlappingColliders = new HashSet<Collider2D>();
+
+    public bool IsSomethingInside => overlappingColliders.Count > 0;
+    public int insideCount => overlappingColliders.Count;
+
+    void Awake()
+    {
+        mainCamera = Camera.main;
+        circleCollider = GetComponent<CircleCollider2D>();
+
+        if (circleCollider != null)
+        {
+            circleCollider.isTrigger = true;
+            circleCollider.offset = Vector2.zero;
+            circleCollider.radius = WorldRadiusFromNormalizedRadius(holeRadius);
+        }
+
+        Rigidbody2D body2D = GetComponent<Rigidbody2D>();
+        if (body2D != null)
+        {
+            body2D.bodyType = RigidbodyType2D.Kinematic;
+            body2D.simulated = true;
+            body2D.gravityScale = 0f;
+        }
+    }
 
     void Update()
     {
-        Vector2 mousePos = Mouse.current.position.ReadValue();
+        UpdateMousePosition();
+        UpdateFlashlightMaterial();
+        UpdateCollisionShape();
+        DetectOverlappingObjects();
+    }
 
-        Vector2 uv = new Vector2(
-            mousePos.x / Screen.width,
-            mousePos.y / Screen.height
+    void UpdateMousePosition()
+    {
+        mouseScreenPosition = Mouse.current.position.ReadValue();
+        holeCenterUV = new Vector2(
+            mouseScreenPosition.x / Screen.width,
+            mouseScreenPosition.y / Screen.height
         );
+    }
 
-        flashlightMaterial.SetVector("_HoleCenter", uv);
+    void UpdateFlashlightMaterial()
+    {
+        if (flashlightMaterial == null) return;
 
-        Debug.Log("Flashlight center (UV): " + uv);
+        if (flashlightMaterial.HasProperty("_HoleCenter"))
+            flashlightMaterial.SetVector("_HoleCenter", holeCenterUV);
+
+        if (flashlightMaterial.HasProperty("_HoleRadius"))
+            flashlightMaterial.SetFloat("_HoleRadius", holeRadius);
+    }
+
+    void UpdateCollisionShape()
+    {
+        if (mainCamera == null || circleCollider == null) return;
+
+        float worldZ = -mainCamera.transform.position.z;
+        Vector3 worldPosition = mainCamera.ScreenToWorldPoint(new Vector3(mouseScreenPosition.x, mouseScreenPosition.y, worldZ));
+        worldPosition.z = 0f;
+        transform.position = worldPosition;
+
+        worldRadius = WorldRadiusFromNormalizedRadius(holeRadius);
+        circleCollider.radius = worldRadius;
+    }
+
+    float WorldRadiusFromNormalizedRadius(float normalizedRadius)
+    {
+        if (mainCamera == null) return 0f;
+
+        if (mainCamera.orthographic)
+        {
+            float worldHeight = mainCamera.orthographicSize * 2f;
+            float worldWidth = worldHeight * Screen.width / Screen.height;
+            return normalizedRadius * worldWidth;
+        }
+
+        float worldZ = -mainCamera.transform.position.z;
+        Vector3 screenOrigin = new Vector3(0f, 0f, worldZ);
+        Vector3 screenRadius = new Vector3(Screen.width * normalizedRadius, 0f, worldZ);
+        Vector3 worldOrigin = mainCamera.ScreenToWorldPoint(screenOrigin);
+        Vector3 worldRadiusPoint = mainCamera.ScreenToWorldPoint(screenRadius);
+        return Vector3.Distance(worldOrigin, worldRadiusPoint);
+    }
+
+    void DetectOverlappingObjects()
+    {
+        if (circleCollider == null) return;
+
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, circleCollider.radius, detectionMask);
+        HashSet<Collider2D> currentOverlaps = new HashSet<Collider2D>(hits);
+
+        foreach (Collider2D hit in currentOverlaps)
+        {
+            if (overlappingColliders.Add(hit))
+            {
+                Debug.Log($"Detected inside flashlight view: {hit.gameObject.name} (count={insideCount})");
+            }
+        }
+
+        List<Collider2D> exited = new List<Collider2D>();
+        foreach (Collider2D existing in overlappingColliders)
+        {
+            if (!currentOverlaps.Contains(existing))
+                exited.Add(existing);
+        }
+
+        foreach (Collider2D exit in exited)
+        {
+            overlappingColliders.Remove(exit);
+            Debug.Log($"No longer inside flashlight view: {exit.gameObject.name} (count={insideCount})");
+        }
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if ((detectionMask.value & (1 << other.gameObject.layer)) == 0) return;
+
+        if (overlappingColliders.Add(other))
+        {
+            Debug.Log($"Entered flashlight hole: {other.gameObject.name} (count={insideCount})");
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D other)
+    {
+        if ((detectionMask.value & (1 << other.gameObject.layer)) == 0) return;
+
+        if (overlappingColliders.Remove(other))
+        {
+            Debug.Log($"Exited flashlight hole: {other.gameObject.name} (count={insideCount})");
+        }
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        if (circleCollider == null) return;
+
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, circleCollider.radius);
     }
 }
