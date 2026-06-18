@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnitEye;
 
 [RequireComponent(typeof(CircleCollider2D), typeof(Rigidbody2D))]
 public class FlashlightFollow : MonoBehaviour
@@ -13,12 +14,20 @@ public class FlashlightFollow : MonoBehaviour
     [Range(0f, 1f)]
     public float holeRadius = 0.18f;
 
+    [Header("Input Mode")]
+    [Tooltip("Use eye gaze instead of mouse to control the flashlight.")]
+    public bool useEyeGaze = false;
+    [Tooltip("Key to toggle between mouse and eye gaze at runtime.")]
+    public Key toggleKey = Key.Tab;
+    [Tooltip("Reference to the UnitEye Gaze component in the scene.")]
+    public Gaze gazeComponent;
+
     [Header("Collision Detection")]
     [Tooltip("Layer mask for objects that should be detected inside the flashlight hole.")]
     public LayerMask detectionMask = ~0;
 
     [Header("Debug Info")]
-    [Tooltip("Current mouse position in screen pixels.")]
+    [Tooltip("Current input position in screen pixels.")]
     public Vector2 mouseScreenPosition;
     [Tooltip("Current flashlight center in UV coordinates.")]
     public Vector2 holeCenterUV;
@@ -56,15 +65,31 @@ public class FlashlightFollow : MonoBehaviour
 
     void Update()
     {
-        UpdateMousePosition();
+        if (Keyboard.current[toggleKey].wasPressedThisFrame)
+            useEyeGaze = !useEyeGaze;
+
+        UpdateInputPosition();
         UpdateFlashlightMaterial();
         UpdateCollisionShape();
         DetectOverlappingObjects();
     }
 
-    void UpdateMousePosition()
+    void UpdateInputPosition()
     {
-        mouseScreenPosition = Mouse.current.position.ReadValue();
+        if (useEyeGaze && gazeComponent != null)
+        {
+            // gazeLocation is in screen pixels with (0,0) at top-left (Unity GUI space)
+            // ScreenToWorldPoint expects (0,0) at bottom-left, so flip Y
+            Vector2 gazePixels = gazeComponent.gazeLocation;
+            Debug.Log(gazePixels);
+            mouseScreenPosition = new Vector2(gazePixels.x, Screen.height - gazePixels.y);
+        }
+        else
+        {
+            Debug.Log($"No gaze");
+            mouseScreenPosition = Mouse.current.position.ReadValue();
+        }
+
         holeCenterUV = new Vector2(
             mouseScreenPosition.x / Screen.width,
             mouseScreenPosition.y / Screen.height
@@ -124,9 +149,7 @@ public class FlashlightFollow : MonoBehaviour
         foreach (Collider2D hit in currentOverlaps)
         {
             if (overlappingColliders.Add(hit))
-            {
                 Debug.Log($"Detected inside flashlight view: {hit.gameObject.name} (count={insideCount})");
-            }
         }
 
         List<Collider2D> exited = new List<Collider2D>();
@@ -148,9 +171,7 @@ public class FlashlightFollow : MonoBehaviour
         if ((detectionMask.value & (1 << other.gameObject.layer)) == 0) return;
 
         if (overlappingColliders.Add(other))
-        {
             Debug.Log($"Entered flashlight hole: {other.gameObject.name} (count={insideCount})");
-        }
     }
 
     void OnTriggerExit2D(Collider2D other)
@@ -158,9 +179,13 @@ public class FlashlightFollow : MonoBehaviour
         if ((detectionMask.value & (1 << other.gameObject.layer)) == 0) return;
 
         if (overlappingColliders.Remove(other))
-        {
             Debug.Log($"Exited flashlight hole: {other.gameObject.name} (count={insideCount})");
-        }
+    }
+
+    void OnGUI()
+    {
+        string mode = useEyeGaze ? "Eye Gaze" : "Mouse";
+        GUI.Label(new Rect(10, 10, 300, 25), $"Flashlight input: {mode}  [{toggleKey} to toggle]");
     }
 
     void OnDrawGizmosSelected()
