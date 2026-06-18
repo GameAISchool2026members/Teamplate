@@ -55,7 +55,9 @@ Material:
     m_Floats:
     - _ColorMask: 15
     - _EnableExternalAlpha: 0
+    - _HoleRadius: 0.0320045
     - _Radius: 0.15
+    - _ScreenAspectRatio: 1.6002252
     - _Softness: 0.1
     - _Stencil: 0
     - _StencilComp: 8

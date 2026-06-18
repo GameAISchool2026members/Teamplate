@@ -246,6 +246,71 @@ Transform:
   - {fileID: 2081430539}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &263645276
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1866872017112976385, guid: ab80341ab8360e74b93c4c946c2afae0, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -6.70669
+      objectReference: {fileID: 0}
+    - target: {fileID: 1866872017112976385, guid: ab80341ab8360e74b93c4c946c2afae0, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1.6284
+      objectReference: {fileID: 0}
+    - target: {fileID: 1866872017112976385, guid: ab80341ab8360e74b93c4c946c2afae0, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1866872017112976385, guid: ab80341ab8360e74b93c4c946c2afae0, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1866872017112976385, guid: ab80341ab8360e74b93c4c946c2afae0, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1866872017112976385, guid: ab80341ab8360e74b93c4c946c2afae0, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1866872017112976385, guid: ab80341ab8360e74b93c4c946c2afae0, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1866872017112976385, guid: ab80341ab8360e74b93c4c946c2afae0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1866872017112976385, guid: ab80341ab8360e74b93c4c946c2afae0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1866872017112976385, guid: ab80341ab8360e74b93c4c946c2afae0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2713708878566024269, guid: ab80341ab8360e74b93c4c946c2afae0, type: 3}
+      propertyPath: m_Name
+      value: FlashlightController
+      objectReference: {fileID: 0}
+    - target: {fileID: 3483701138255736816, guid: ab80341ab8360e74b93c4c946c2afae0, type: 3}
+      propertyPath: holeRadius
+      value: 0.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 8244892936334854327, guid: ab80341ab8360e74b93c4c946c2afae0, type: 3}
+      propertyPath: webCamName
+      value: HD Pro Webcam C920
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: ab80341ab8360e74b93c4c946c2afae0, type: 3}
 --- !u!1 &269580271
 GameObject:
   m_ObjectHideFlags: 0
@@ -1150,7 +1215,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 20
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -7320,3 +7385,4 @@ SceneRoots:
   - {fileID: 453450574}
   - {fileID: 2001465109}
   - {fileID: 150814205}
+  - {fileID: 263645276}
