@@ -100,11 +100,29 @@ public class FlashlightFollow : MonoBehaviour
     {
         if (flashlightMaterial == null) return;
 
+        // Calculate aspect ratio correction
+        float aspectRatio = (float)Screen.width / Screen.height;
+        
+        // Correct HoleCenter X by multiplying by aspect ratio to compensate for shader division
+        Vector2 correctedCenter = new Vector2(
+            holeCenterUV.x * aspectRatio,
+            holeCenterUV.y
+        );
+
+        // Correct radius by multiplying by aspect ratio to maintain circle shape
+        float correctedRadius = holeRadius * aspectRatio;
+
         if (flashlightMaterial.HasProperty("_HoleCenter"))
-            flashlightMaterial.SetVector("_HoleCenter", holeCenterUV);
+            flashlightMaterial.SetVector("_HoleCenter", correctedCenter);
 
         if (flashlightMaterial.HasProperty("_HoleRadius"))
-            flashlightMaterial.SetFloat("_HoleRadius", holeRadius);
+            flashlightMaterial.SetFloat("_HoleRadius", correctedRadius);
+
+        // Pass screen aspect ratio to shader for coordinate correction
+        if (flashlightMaterial.HasProperty("_ScreenAspectRatio"))
+        {
+            flashlightMaterial.SetFloat("_ScreenAspectRatio", aspectRatio);
+        }
     }
 
     void UpdateCollisionShape()
@@ -116,7 +134,11 @@ public class FlashlightFollow : MonoBehaviour
         worldPosition.z = 0f;
         transform.position = worldPosition;
 
-        worldRadius = WorldRadiusFromNormalizedRadius(holeRadius);
+        // Apply aspect ratio correction to radius for collision shape (must match shader)
+        float aspectRatio = (float)Screen.width / Screen.height;
+        float correctedRadius = holeRadius * aspectRatio;
+        
+        worldRadius = WorldRadiusFromNormalizedRadius(correctedRadius);
         circleCollider.radius = worldRadius;
     }
 
@@ -128,12 +150,14 @@ public class FlashlightFollow : MonoBehaviour
         {
             float worldHeight = mainCamera.orthographicSize * 2f;
             float worldWidth = worldHeight * Screen.width / Screen.height;
-            return normalizedRadius * worldWidth;
+            float minDimension = Mathf.Min(worldWidth, worldHeight);
+            return normalizedRadius * minDimension * 0.5f;
         }
 
         float worldZ = -mainCamera.transform.position.z;
-        Vector3 screenOrigin = new Vector3(0f, 0f, worldZ);
-        Vector3 screenRadius = new Vector3(Screen.width * normalizedRadius, 0f, worldZ);
+        float screenDimension = Mathf.Min(Screen.width, Screen.height);
+        Vector3 screenOrigin = new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, worldZ);
+        Vector3 screenRadius = new Vector3(Screen.width * 0.5f + screenDimension * normalizedRadius, Screen.height * 0.5f, worldZ);
         Vector3 worldOrigin = mainCamera.ScreenToWorldPoint(screenOrigin);
         Vector3 worldRadiusPoint = mainCamera.ScreenToWorldPoint(screenRadius);
         return Vector3.Distance(worldOrigin, worldRadiusPoint);
