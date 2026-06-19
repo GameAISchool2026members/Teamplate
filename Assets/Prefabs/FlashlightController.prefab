@@ -134,7 +134,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 896eb57cbfb900e4fbba99cb025b6f16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UniUlm.UnitEye.Runtime::WebCamInput
-  webCamName: HD Webcam
+  webCamName: 'Integrated Camera: Integrated C (/dev/video0)'
   webCamResolution: {x: 1920, y: 1080}
   staticInput: {fileID: 0}
   rawImage: {fileID: 0}

@@ -361,6 +361,57 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!1 &136577975
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 136577977}
+  - component: {fileID: 136577976}
+  m_Layer: 0
+  m_Name: EnemySpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &136577976
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 136577975}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f97439d176a7ea86598a2018699fcd70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
+  enemyPrefab: {fileID: 925164441}
+  spawnRadius: 5
+  spawnCooldown: 3
+  maxEnemies: 5
+  startDelay: 0
+  spawnZPosition: 0
+  showDebugRadius: 1
+--- !u!4 &136577977
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 136577975}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 5.62, y: 11.46, z: -10}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &150814203
 GameObject:
   m_ObjectHideFlags: 0
@@ -32440,11 +32491,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3483701138255736816, guid: ab80341ab8360e74b93c4c946c2afae0, type: 3}
       propertyPath: useEyeGaze
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8244892936334854327, guid: ab80341ab8360e74b93c4c946c2afae0, type: 3}
       propertyPath: webCamName
-      value: HD Pro Webcam C920
+      value: 'Integrated Camera: Integrated C (/dev/video0)'
+      objectReference: {fileID: 0}
+    - target: {fileID: 8244892936334854327, guid: ab80341ab8360e74b93c4c946c2afae0, type: 3}
+      propertyPath: mirrorImage
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -40858,3 +40913,4 @@ SceneRoots:
   - {fileID: 4371801909492350185}
   - {fileID: 817567715}
   - {fileID: 1429817300}
+  - {fileID: 136577977}
