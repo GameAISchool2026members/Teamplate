@@ -21,6 +21,8 @@ public class FlashlightFollow : MonoBehaviour
     public Key toggleKey = Key.Tab;
     [Tooltip("Reference to the UnitEye Gaze component in the scene.")]
     public Gaze gazeComponent;
+    [Tooltip("Scales gaze position relative to screen center. Higher = more sensitive.")]
+    public float gazeSensitivityScale = 2.5f;
 
     [Header("Collision Detection")]
     [Tooltip("Layer mask for objects that should be detected inside the flashlight hole.")]
@@ -83,11 +85,27 @@ public class FlashlightFollow : MonoBehaviour
     {
         if (useEyeGaze && gazeComponent != null)
         {
-            // gazeLocation is in screen pixels with (0,0) at top-left (Unity GUI space)
-            // ScreenToWorldPoint expects (0,0) at bottom-left, so flip Y
             Vector2 gazePixels = gazeComponent.gazeLocation;
-            Debug.Log(gazePixels);
-            mouseScreenPosition = new Vector2(gazePixels.x, Screen.height - gazePixels.y);
+            gazePixels = new Vector2(gazePixels.x, Screen.height - gazePixels.y);
+
+            // Normalize to -1..1 range around center
+            Vector2 screenCenter = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
+            Vector2 normalized = new Vector2(
+                (gazePixels.x - screenCenter.x) / screenCenter.x,
+                (gazePixels.y - screenCenter.y) / screenCenter.y
+            );
+
+            // Apply power curve to push edges further out (exponent > 1 = more aggressive at edges)
+            Vector2 remapped = new Vector2(
+                Mathf.Sign(normalized.x) * Mathf.Pow(Mathf.Abs(normalized.x), gazeSensitivityScale),
+                Mathf.Sign(normalized.y) * Mathf.Pow(Mathf.Abs(normalized.y), gazeSensitivityScale)
+            );
+
+            // Convert back to screen pixels
+            mouseScreenPosition = screenCenter + new Vector2(
+                remapped.x * screenCenter.x,
+                remapped.y * screenCenter.y
+            );
         }
         else
         {

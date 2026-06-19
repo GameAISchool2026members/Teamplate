@@ -32512,13 +32512,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: FlashlightController
       objectReference: {fileID: 0}
+    - target: {fileID: 2713708878566024269, guid: ab80341ab8360e74b93c4c946c2afae0, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3483701138255736816, guid: ab80341ab8360e74b93c4c946c2afae0, type: 3}
       propertyPath: holeRadius
       value: 0.02
       objectReference: {fileID: 0}
     - target: {fileID: 3483701138255736816, guid: ab80341ab8360e74b93c4c946c2afae0, type: 3}
       propertyPath: useEyeGaze
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8244892936334854327, guid: ab80341ab8360e74b93c4c946c2afae0, type: 3}
       propertyPath: webCamName
@@ -35800,7 +35804,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!50 &1398327554
 Rigidbody2D:
   serializedVersion: 5
@@ -35878,7 +35882,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FlashlightFollow
   flashlightMaterial: {fileID: 2100000, guid: 2c26530c73e5a57578372c17bede5c87, type: 2}
   holeRadius: 0.18
-  useEyeGaze: 0
+  useEyeGaze: 1
   toggleKey: 3
   gazeComponent: {fileID: 0}
   detectionMask:

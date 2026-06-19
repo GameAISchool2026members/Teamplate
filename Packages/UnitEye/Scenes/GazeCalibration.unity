@@ -642,11 +642,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   points: []
   calibrationDot: {fileID: 2800000, guid: 5256747c2ede88a48b8744e26b8108bf, type: 3}
-  speed: 10
+  speed: 5
   padding: 0
   drawCheckpoints: 1
   currentRound: 0
-  maxRoundsPerPreset: 2
+  maxRoundsPerPreset: 5
   calibrationType: 2
   save: 1
   stopAfterPoints: 1
