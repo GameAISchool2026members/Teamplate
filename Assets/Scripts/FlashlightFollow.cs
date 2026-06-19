@@ -27,6 +27,8 @@ public class FlashlightFollow : MonoBehaviour
     [Header("Collision Detection")]
     [Tooltip("Layer mask for objects that should be detected inside the flashlight hole.")]
     public LayerMask detectionMask = ~0;
+    [Tooltip("Scale applied to the computed collider radius (use 0.5 for half-size).")]
+    public float collisionScale = 0.5f;
 
     [Header("Debug Info")]
     [Tooltip("Current input position in screen pixels.")]
@@ -154,12 +156,32 @@ public class FlashlightFollow : MonoBehaviour
         worldPosition.z = 0f;
         transform.position = worldPosition;
 
-        // Apply aspect ratio correction to radius for collision shape (must match shader)
-        float aspectRatio = (float)Screen.width / Screen.height;
-        float correctedRadius = holeRadius * aspectRatio;
-        
-        worldRadius = WorldRadiusFromNormalizedRadius(correctedRadius);
+        // Compute world radius from screen-pixel radius so collision matches the visible hole.
+        worldRadius = ComputeWorldRadiusFromUV(holeRadius) * Mathf.Clamp01(collisionScale);
         circleCollider.radius = worldRadius;
+    }
+
+    // Compute a world-space radius for the given normalized UV radius centered at current input position.
+    // Uses the smaller screen dimension so normalizedRadius==1 covers the full shorter screen dimension.
+    float ComputeWorldRadiusFromUV(float normalizedRadius)
+    {
+        if (mainCamera == null) return 0f;
+
+        float worldZ = -mainCamera.transform.position.z;
+
+        // Pixel radius: normalizedRadius maps to fraction of the smaller screen dimension (diameter).
+        float pixelRadius = normalizedRadius * 0.5f * Mathf.Min(Screen.width, Screen.height);
+
+        Vector3 screenCenter = new Vector3(mouseScreenPosition.x, mouseScreenPosition.y, worldZ);
+        Vector3 screenRadiusPoint = new Vector3(mouseScreenPosition.x + pixelRadius, mouseScreenPosition.y, worldZ);
+
+        Vector3 worldCenter = mainCamera.ScreenToWorldPoint(screenCenter);
+        Vector3 worldRadiusPoint = mainCamera.ScreenToWorldPoint(screenRadiusPoint);
+
+        worldCenter.z = 0f;
+        worldRadiusPoint.z = 0f;
+
+        return Vector3.Distance(worldCenter, worldRadiusPoint);
     }
 
     float WorldRadiusFromNormalizedRadius(float normalizedRadius)

@@ -282,6 +282,8 @@ MonoBehaviour:
   acceleration: 35
   obstacleAvoidanceRadius: 1.49
   obstacleAvoidanceStrength: 1.25
+  playerTag: Player
+  gameOverSceneName: GameOver
   cellSize: 0.75
   repathInterval: 0.25
   searchPadding: 4
@@ -302,6 +304,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   timeToKill: 1
+  startDyingClip: {fileID: 8300000, guid: ed6e620439e508149bdfd8436a6c9ad4, type: 3}
+  deathClip: {fileID: 8300000, guid: 6a8d2d041fd3f2b429b289f138ef84c3, type: 3}
+  audioSource: {fileID: 0}
+  spriteRenderer: {fileID: 0}
+  flashColor: {r: 1, g: 0.2, b: 0.2, a: 0.6}
 --- !u!95 &6503714222866683394
 Animator:
   serializedVersion: 7

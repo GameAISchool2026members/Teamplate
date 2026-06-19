@@ -558,7 +558,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3128903029877491951, guid: c867664103475714cac8279aaaf7f6f2, type: 3}
       propertyPath: webCamName
-      value: HD Webcam
+      value: HD Pro Webcam C920
       objectReference: {fileID: 0}
     - target: {fileID: 3128903029877491951, guid: c867664103475714cac8279aaaf7f6f2, type: 3}
       propertyPath: targetFramerate
@@ -642,11 +642,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   points: []
   calibrationDot: {fileID: 2800000, guid: 5256747c2ede88a48b8744e26b8108bf, type: 3}
-  speed: 5
+  speed: 10
   padding: 0
   drawCheckpoints: 1
   currentRound: 0
-  maxRoundsPerPreset: 5
+  maxRoundsPerPreset: 3
   calibrationType: 2
   save: 1
   stopAfterPoints: 1
