@@ -1,4 +1,3 @@
-#if UNITY_EDITOR
 using System;
 using System.IO;
 using System.Reflection;
@@ -98,9 +97,6 @@ public static class SceneBuilder
         cam.orthographic = true;
         camGO.tag = "MainCamera";
         camGO.AddComponent<AudioListener>();
-
-        GetComponent<GazeTracker>();
-        GetComponent<VisionController>();
 
         // Canvas
         var (canvas, cRect) = MakeCanvas();
@@ -436,7 +432,7 @@ public static class SceneBuilder
         exitGO.GetComponent<SpriteRenderer>().color = new Color(.2f,1f,.4f,.65f);
         exitGO.GetComponent<SpriteRenderer>().sortingOrder = 2;
         BoxCollider2D bc = exitGO.AddComponent<BoxCollider2D>(); bc.isTrigger = true;
-        
+        exitGO.AddComponent<ExitTrigger>();
 
         // Enemies
         LayerMask wallMask = 1 << wallLayer;
@@ -457,7 +453,8 @@ public static class SceneBuilder
         // Managers
         GameObject mgrs = new GameObject("Managers");
         GameManager  gm  = mgrs.AddComponent<GameManager>();
-        
+        GazeTracker  gt  = mgrs.AddComponent<GazeTracker>();
+        FlashlightController vc = mgrs.AddComponent<FlashlightController>();
         SanityManager sm  = mgrs.AddComponent<SanityManager>();
 
         vc.gazeTracker  = gt;
@@ -471,7 +468,6 @@ public static class SceneBuilder
         gm.gazeTracker   = gt;
         gm.sanityManager = sm;
 
-        // Wire enemy VisionController references
         foreach (EnemyAI ai in UnityEngine.Object.FindObjectsOfType<EnemyAI>())
             ai.vision = vc;
 
@@ -872,8 +868,8 @@ public static class SceneBuilder
             "UnityEngine.Rendering.Universal.Light2D, Unity.RenderPipelines.Universal.Runtime");
         if (t == null)
         {
-            Debug.LogWarning($"Light2D not found for '{go.name}'. " +
-                "Add it manually (type={typeName}, intensity={intensity}).");
+            Debug.LogWarning("Light2D not found for " + go.name + ". " +
+                "Add it manually (type=" + typeName + ", intensity=" + intensity + ").");
             return;
         }
         Component l = go.AddComponent(t);
@@ -887,7 +883,7 @@ public static class SceneBuilder
     static void SetProp(object obj, string prop, object val)
     {
         try { obj.GetType().GetProperty(prop)?.SetValue(obj, val); }
-        catch { Debug.LogWarning($"Could not set Light2D.{prop} - set it manually."); }
+        catch { Debug.LogWarning("Could not set Light2D." + prop + " - set it manually."); }
     }
 
     static void SetEnumProp(object obj, string prop, string enumVal)
@@ -897,7 +893,7 @@ public static class SceneBuilder
             PropertyInfo pi = obj.GetType().GetProperty(prop);
             if (pi != null) pi.SetValue(obj, Enum.Parse(pi.PropertyType, enumVal));
         }
-        catch { Debug.LogWarning($"Could not set Light2D.{prop}={enumVal} - set it manually."); }
+        catch { Debug.LogWarning("Could not set Light2D." + prop + "=" + enumVal + " - set it manually."); }
     }
 
     // ================================================================== White square sprite
