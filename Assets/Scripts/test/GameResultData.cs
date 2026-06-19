@@ -21,7 +21,7 @@ public static class SceneNames
 {
     public const string MainMenu       = "MainMenu";
     public const string EyeCalibration = "EyeCalibration";
-    public const string DemoLevel      = "DemoLevel";
+    public const string DemoLevel      = "GameScene";
     public const string GameOver       = "GameOver";
     public const string Win            = "Win";
 }

@@ -32522,7 +32522,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8244892936334854327, guid: ab80341ab8360e74b93c4c946c2afae0, type: 3}
       propertyPath: webCamName
-      value: HD Pro Webcam C920
+      value: MacBook Pro Camera
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

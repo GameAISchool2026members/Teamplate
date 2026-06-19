@@ -7,6 +7,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 /// <summary>
 /// Builds all five game scenes through Unity's API.
@@ -67,7 +68,6 @@ public static class SceneBuilder
     public static void BuildAllScenes()
     {
         EnsureTag("Player");
-        int wallLayer = EnsureLayer("Wall");
         EnsureFolder("Assets/Scenes");
         EnsureFolder("Assets/Generated");
 
@@ -75,12 +75,12 @@ public static class SceneBuilder
 
         BuildMainMenuScene(sq);
         BuildEyeCalibrationScene(sq);
-        BuildDemoLevelScene(sq, wallLayer);
+        // DemoLevel is currently not used in runtime flow; keep existing GameScene instead.
         BuildGameOverScene(sq);
         BuildWinScene(sq);
         RegisterBuildSettings();
 
-        Debug.Log("All 5 scenes built. Open Assets/Scenes/ to find them. " +
+        Debug.Log("Core scenes rebuilt and Build Settings now point to GameScene. " +
                   "Remember to import Cinzel font into Assets/Resources/ for best visuals.");
     }
 
@@ -88,6 +88,7 @@ public static class SceneBuilder
     static void BuildMainMenuScene(Sprite sq)
     {
         Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+        EnsureEventSystem();
 
         // Camera
         GameObject camGO = new GameObject("MainCamera");
@@ -282,6 +283,7 @@ public static class SceneBuilder
     static void BuildEyeCalibrationScene(Sprite sq)
     {
         Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+        EnsureEventSystem();
 
         GameObject camGO = new GameObject("MainCamera");
         Camera cam = camGO.AddComponent<Camera>();
@@ -309,9 +311,8 @@ public static class SceneBuilder
         // Webcam frame
         GameObject camFrame = MakeGO("WebcamFrame", panel.transform);
         SetRT(camFrame, V(.5f,1f), V(.5f,1f), new Vector2(0,-120), new Vector2(240,135));
-        MakeImageOnGO(camFrame, new Color(.02f,.04f,.08f));
         RawImage rawImg = camFrame.AddComponent<RawImage>();
-        rawImg.color = Color.white;
+        rawImg.color = new Color(.02f,.04f,.08f);
 
         // Face guide circles (decorative)
         GameObject guide = MakeGO("FaceGuide", camFrame.transform);
@@ -346,7 +347,7 @@ public static class SceneBuilder
         GameObject fillArea = MakeGO("FillArea", sliderGO.transform);
         SetRT(fillArea, V(0,0), V(1,1), Vector2.zero, Vector2.zero);
         GameObject fill = MakeGO("Fill", fillArea.transform);
-        RectTransform fillRT = fill.AddComponent<RectTransform>();
+        RectTransform fillRT = fill.GetComponent<RectTransform>() ?? fill.AddComponent<RectTransform>();
         fillRT.anchorMin = Vector2.zero; fillRT.anchorMax = new Vector2(0.65f,1f);
         fillRT.offsetMin = fillRT.offsetMax = Vector2.zero;
         MakeImageOnGO(fill, H("#2A6A80"));
@@ -382,6 +383,7 @@ public static class SceneBuilder
     static void BuildDemoLevelScene(Sprite sq, int wallLayer)
     {
         Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+        EnsureEventSystem();
 
         int rows = Maze.Length, cols = Maze[0].Length;
 
@@ -432,7 +434,6 @@ public static class SceneBuilder
         exitGO.GetComponent<SpriteRenderer>().color = new Color(.2f,1f,.4f,.65f);
         exitGO.GetComponent<SpriteRenderer>().sortingOrder = 2;
         BoxCollider2D bc = exitGO.AddComponent<BoxCollider2D>(); bc.isTrigger = true;
-        exitGO.AddComponent<ExitTrigger>();
 
         // Enemies
         LayerMask wallMask = 1 << wallLayer;
@@ -485,7 +486,7 @@ public static class SceneBuilder
         GameObject fillArea = MakeGO("FillArea", sliderGO.transform);
         SetRT(fillArea, V(0,0), V(1,1), Vector2.zero, Vector2.zero);
         GameObject fill = MakeGO("Fill", fillArea.transform);
-        RectTransform fillRT = fill.AddComponent<RectTransform>();
+        RectTransform fillRT = fill.GetComponent<RectTransform>() ?? fill.AddComponent<RectTransform>();
         fillRT.anchorMin = Vector2.zero; fillRT.anchorMax = Vector2.one;
         fillRT.offsetMin = fillRT.offsetMax = Vector2.zero;
         Image fillImg = fill.AddComponent<Image>(); fillImg.color = new Color(.8f,.2f,.3f);
@@ -512,6 +513,7 @@ public static class SceneBuilder
     static void BuildGameOverScene(Sprite sq)
     {
         Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+        EnsureEventSystem();
 
         GameObject camGO = new GameObject("MainCamera");
         Camera cam = camGO.AddComponent<Camera>();
@@ -571,6 +573,7 @@ public static class SceneBuilder
     static void BuildWinScene(Sprite sq)
     {
         Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+        EnsureEventSystem();
 
         GameObject camGO = new GameObject("MainCamera");
         Camera cam = camGO.AddComponent<Camera>();
@@ -607,7 +610,7 @@ public static class SceneBuilder
         SetRT(barOuter, V(.5f,.5f), V(.5f,.5f), new Vector2(0,18), new Vector2(220,12));
         MakeImageOnGO(barOuter, H("#1A1010"));
         GameObject barFill = MakeGO("SanityBarFill", barOuter.transform);
-        RectTransform bfRT = barFill.AddComponent<RectTransform>();
+        RectTransform bfRT = barFill.GetComponent<RectTransform>() ?? barFill.AddComponent<RectTransform>();
         bfRT.anchorMin = Vector2.zero; bfRT.anchorMax = new Vector2(0.62f,1f);
         bfRT.offsetMin = bfRT.offsetMax = Vector2.zero;
         Image barFillImg = barFill.AddComponent<Image>(); barFillImg.color = H("#C8901A");
@@ -647,11 +650,11 @@ public static class SceneBuilder
         {
             new EditorBuildSettingsScene("Assets/Scenes/MainMenu.unity",       true),
             new EditorBuildSettingsScene("Assets/Scenes/EyeCalibration.unity", true),
-            new EditorBuildSettingsScene("Assets/Scenes/DemoLevel.unity",      true),
+            new EditorBuildSettingsScene("Assets/Scenes/GameScene.unity",      true),
             new EditorBuildSettingsScene("Assets/Scenes/GameOver.unity",       true),
             new EditorBuildSettingsScene("Assets/Scenes/Win.unity",            true),
         };
-        Debug.Log("Build Settings updated with all 5 scenes.");
+        Debug.Log("Build Settings updated to use GameScene instead of DemoLevel.");
     }
 
     // ================================================================== WORLD HELPERS
@@ -679,7 +682,7 @@ public static class SceneBuilder
         Rigidbody2D rb = go.AddComponent<Rigidbody2D>();
         rb.gravityScale = 0f; rb.freezeRotation = true;
         go.AddComponent<CircleCollider2D>();
-        go.AddComponent<PlayerController>();
+        go.AddComponent<PlayerMovement>();
         return go.transform;
     }
 
@@ -703,7 +706,7 @@ public static class SceneBuilder
         int order, Vector2 size = default)
     {
         GameObject go = MakeGO(name, parent);
-        RectTransform rt = go.AddComponent<RectTransform>();
+        RectTransform rt = go.GetComponent<RectTransform>() ?? go.AddComponent<RectTransform>();
         rt.anchorMin = ancMin; rt.anchorMax = ancMax;
         rt.offsetMin = offMin; rt.offsetMax = offMax;
         if (size != default) rt.sizeDelta = size;
@@ -722,7 +725,7 @@ public static class SceneBuilder
         Vector2 sizeDelta, TextAnchor alignment = TextAnchor.MiddleCenter)
     {
         GameObject go = MakeGO(name, parent);
-        RectTransform rt = go.AddComponent<RectTransform>();
+        RectTransform rt = go.GetComponent<RectTransform>() ?? go.AddComponent<RectTransform>();
         rt.anchorMin = ancMin; rt.anchorMax = ancMax;
         rt.pivot = new Vector2(0.5f, 0.5f);
         rt.anchoredPosition = ancPos;
@@ -741,7 +744,7 @@ public static class SceneBuilder
     {
         // Outer border image
         GameObject border = MakeGO(name + "_border", parent);
-        RectTransform brt = border.AddComponent<RectTransform>();
+        RectTransform brt = border.GetComponent<RectTransform>() ?? border.AddComponent<RectTransform>();
         brt.anchorMin = brt.anchorMax = new Vector2(0.5f, 0.5f);
         brt.pivot     = new Vector2(0.5f, 0.5f);
         brt.anchoredPosition = anchoredPos;
@@ -750,7 +753,7 @@ public static class SceneBuilder
 
         // Inner button
         GameObject go = MakeGO(name, border.transform);
-        RectTransform rt = go.AddComponent<RectTransform>();
+        RectTransform rt = go.GetComponent<RectTransform>() ?? go.AddComponent<RectTransform>();
         rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one;
         rt.offsetMin = Vector2.one; rt.offsetMax = -Vector2.one;
         Image img = go.AddComponent<Image>(); img.color = bgColor;
@@ -764,7 +767,7 @@ public static class SceneBuilder
 
         // Label
         GameObject textGO = MakeGO("Label", go.transform);
-        RectTransform textRT = textGO.AddComponent<RectTransform>();
+        RectTransform textRT = textGO.GetComponent<RectTransform>() ?? textGO.AddComponent<RectTransform>();
         textRT.anchorMin = Vector2.zero; textRT.anchorMax = Vector2.one;
         textRT.offsetMin = textRT.offsetMax = Vector2.zero;
         Text t = textGO.AddComponent<Text>();
@@ -796,7 +799,7 @@ public static class SceneBuilder
         Vector2 ancMin, Vector2 ancMax, Vector2 ancPos, Vector2 size)
     {
         GameObject go = MakeGO(name, parent);
-        RectTransform rt = go.AddComponent<RectTransform>();
+        RectTransform rt = go.GetComponent<RectTransform>() ?? go.AddComponent<RectTransform>();
         rt.anchorMin = ancMin; rt.anchorMax = ancMax;
         rt.pivot     = new Vector2(0.5f, 0.5f);
         rt.anchoredPosition = ancPos;
@@ -808,7 +811,7 @@ public static class SceneBuilder
         Vector2 ancMin, Vector2 ancMax, Vector2 ancPos)
     {
         GameObject root = MakeGO(name, canvas);
-        RectTransform rt = root.AddComponent<RectTransform>();
+        RectTransform rt = root.GetComponent<RectTransform>() ?? root.AddComponent<RectTransform>();
         rt.anchorMin = ancMin; rt.anchorMax = ancMax;
         rt.pivot     = new Vector2(0.5f, 0.5f);
         rt.anchoredPosition = ancPos;
@@ -816,14 +819,14 @@ public static class SceneBuilder
 
         // Body (bottom half)
         GameObject body = MakeGO("Body", root.transform);
-        RectTransform brt = body.AddComponent<RectTransform>();
+        RectTransform brt = body.GetComponent<RectTransform>() ?? body.AddComponent<RectTransform>();
         brt.anchorMin = new Vector2(0.2f,0f); brt.anchorMax = new Vector2(0.8f,.5f);
         brt.offsetMin = brt.offsetMax = Vector2.zero;
         Image bImg = body.AddComponent<Image>(); bImg.color = bodyColor;
 
         // Flame (top half)
         GameObject flame = MakeGO("Flame", root.transform);
-        RectTransform frt = flame.AddComponent<RectTransform>();
+        RectTransform frt = flame.GetComponent<RectTransform>() ?? flame.AddComponent<RectTransform>();
         frt.anchorMin = new Vector2(0f,.5f); frt.anchorMax = Vector2.one;
         frt.offsetMin = frt.offsetMax = Vector2.zero;
         Image fImg = flame.AddComponent<Image>(); fImg.color = flameColor;
@@ -836,7 +839,10 @@ public static class SceneBuilder
     // ================================================================== MISC HELPERS
     static GameObject MakeGO(string name, Transform parent)
     {
-        GameObject go = new GameObject(name);
+        bool isUIParent = parent is RectTransform || parent.GetComponent<Canvas>() != null;
+        GameObject go = isUIParent
+            ? new GameObject(name, typeof(RectTransform))
+            : new GameObject(name);
         go.transform.SetParent(parent, false);
         return go;
     }
@@ -852,6 +858,23 @@ public static class SceneBuilder
     }
 
     static Vector2 V(float x, float y) => new Vector2(x, y);
+
+    static void EnsureEventSystem()
+    {
+        if (UnityEngine.Object.FindObjectOfType<EventSystem>() != null)
+            return;
+
+        GameObject go = new GameObject("EventSystem");
+        go.AddComponent<EventSystem>();
+
+        // Prefer the new Input System UI module when available, fallback to Standalone.
+        Type inputSystemModuleType = Type.GetType(
+            "UnityEngine.InputSystem.UI.InputSystemUIInputModule, Unity.InputSystem");
+        if (inputSystemModuleType != null)
+            go.AddComponent(inputSystemModuleType);
+        else
+            go.AddComponent<StandaloneInputModule>();
+    }
 
     static Font GetFont()
     {
@@ -990,4 +1013,3 @@ public static class SceneBuilder
         return null;
     }
 }
-#endif
