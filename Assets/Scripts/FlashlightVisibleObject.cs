@@ -29,7 +29,7 @@ public class FlashlightVisibleObject : MonoBehaviour
         float distance = Vector2.Distance(transform.position, flashlight.transform.position);
         float radius = flashlight.GetWorldRadius() * 10.0f;
 
-        Debug.Log($"Enemy pos: {transform.position}, Flashlight pos: {flashlight.transform.position}, Distance: {distance}, WorldRadius: {radius}, InLight: {distance <= radius}");
+        // Debug.Log($"Enemy pos: {transform.position}, Flashlight pos: {flashlight.transform.position}, Distance: {distance}, WorldRadius: {radius}, InLight: {distance <= radius}");
 
         bool nowInLight = distance <= radius;
 

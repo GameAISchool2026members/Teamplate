@@ -1,5 +1,7 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class EnemyMovement : MonoBehaviour
 {
@@ -9,6 +11,10 @@ public class EnemyMovement : MonoBehaviour
     [SerializeField] private float acceleration = 35f;
     [SerializeField] private float obstacleAvoidanceRadius = 1.49f;
     [SerializeField] private float obstacleAvoidanceStrength = 1.25f;
+
+    [Header("Player Contact Kill")]
+    [SerializeField] private string playerTag = "Player";
+    [SerializeField] private string gameOverSceneName = "GameOver";
 
     [Header("Pathfinding")]
     [SerializeField] private float cellSize = 0.75f;
@@ -22,6 +28,7 @@ public class EnemyMovement : MonoBehaviour
     private readonly List<Vector2> currentPath = new List<Vector2>();
     private int pathIndex;
     private float nextRepathTime;
+    private bool hasTriggeredGameOver = false;
 
     private void Start()
     {
@@ -336,10 +343,52 @@ public class EnemyMovement : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Player"))
+        TryKillPlayerAndLoadGameOver(collision.gameObject);
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        TryKillPlayerAndLoadGameOver(other.gameObject);
+    }
+
+    private void TryKillPlayerAndLoadGameOver(GameObject other)
+    {
+        if (hasTriggeredGameOver) return;
+        if (other == null) return;
+        if (!other.CompareTag(playerTag)) return;
+
+        hasTriggeredGameOver = true;
+
+        StartCoroutine(HandlePlayerDeath(other));
+    }
+
+    private IEnumerator HandlePlayerDeath(GameObject playerObj)
+    {
+        if (playerObj != null)
         {
-            Debug.Log("Player caught!");
+            // Disable player physics and colliders to avoid further interactions
+            Rigidbody2D prb = playerObj.GetComponent<Rigidbody2D>();
+            if (prb != null) prb.simulated = false;
+
+            Collider2D[] cols = playerObj.GetComponentsInChildren<Collider2D>(true);
+            foreach (var c in cols)
+                c.enabled = false;
+
+            // Optionally disable MonoBehaviours on player so other scripts don't run
+            var monos = playerObj.GetComponentsInChildren<MonoBehaviour>(true);
+            foreach (var m in monos)
+            {
+                if (m == this) continue;
+                m.enabled = false;
+            }
         }
+
+        // Wait a frame to let engine settle, then a short pause for any death animation
+        yield return null;
+        yield return new WaitForSeconds(0.2f);
+
+        if (!string.IsNullOrWhiteSpace(gameOverSceneName))
+            SceneManager.LoadSceneAsync(gameOverSceneName);
     }
 
     private sealed class Node

@@ -95,11 +95,8 @@ public class FlashlightFollow : MonoBehaviour
                 (gazePixels.y - screenCenter.y) / screenCenter.y
             );
 
-            // Apply power curve to push edges further out (exponent > 1 = more aggressive at edges)
-            Vector2 remapped = new Vector2(
-                Mathf.Sign(normalized.x) * Mathf.Pow(Mathf.Abs(normalized.x), gazeSensitivityScale),
-                Mathf.Sign(normalized.y) * Mathf.Pow(Mathf.Abs(normalized.y), gazeSensitivityScale)
-            );
+            // Linear scale
+            Vector2 remapped = normalized * gazeSensitivityScale;
 
             // Convert back to screen pixels
             mouseScreenPosition = screenCenter + new Vector2(

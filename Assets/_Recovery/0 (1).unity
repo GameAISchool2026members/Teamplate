@@ -33518,6 +33518,8 @@ MonoBehaviour:
   acceleration: 35
   obstacleAvoidanceRadius: 1.49
   obstacleAvoidanceStrength: 1.25
+  playerTag: Player
+  gameOverSceneName: GameOver
   cellSize: 0.75
   repathInterval: 0.25
   searchPadding: 4
@@ -33560,8 +33562,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   timeToKill: 1
-  playerTag: Player
-  gameOverSceneName: GameOver
 --- !u!114 &925164449
 MonoBehaviour:
   m_ObjectHideFlags: 0
