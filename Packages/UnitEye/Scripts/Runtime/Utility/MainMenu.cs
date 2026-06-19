@@ -25,7 +25,8 @@ public class MainMenu : MonoBehaviour
 
     public static void LoadMainMenuScene()
     {
-        SceneManager.LoadScene("GazeMainMenu");
+        string currentScene = SceneManager.GetActiveScene().name;
+        SceneManager.LoadScene(currentScene == "GazeCalibration" ? "MainMenu" : "GazeMainMenu");
     }
 
     public static void QuitApplication()
