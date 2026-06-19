@@ -542,7 +542,7 @@ public static class SceneBuilder
             V(.5f,.75f), V(.5f,.75f), Vector2.zero, new Vector2(80,80));
 
         // Cause title (filled at runtime by GameOverUI)
-        Text causeTxt = MakeText(canvas, "CauseTitle", "SANITY LOST", 72, RED_DRK,
+        Text causeTxt = MakeText(canvas, "CauseTitle", "YOU DIED", 72, RED_DRK,
             V(.5f,.65f), V(.5f,.65f), Vector2.zero, new Vector2(800,90), TextAnchor.MiddleCenter);
         causeTxt.fontStyle = FontStyle.Bold;
 
@@ -567,12 +567,17 @@ public static class SceneBuilder
 
         GameObject mgr = new GameObject("GOManager");
         GameOverUI goUI    = mgr.AddComponent<GameOverUI>();
+        AudioSource goSfx  = mgr.AddComponent<AudioSource>();
+        goSfx.playOnAwake  = false;
+        goSfx.loop         = false;
         goUI.causeText    = causeTxt;
         goUI.sanityText   = sanTxt;
         goUI.timeText     = timeTxt;
         goUI.enemiesText  = enmTxt;
         goUI.retryBtn     = retryBtn;
         goUI.mainMenuBtn  = menuBtn;
+        goUI.gameOverAudioSource = goSfx;
+        goUI.gameOverClip = LoadGameOverSoundClip();
 
         EditorSceneManager.SaveScene(scene, "Assets/Scenes/GameOver.unity");
     }
@@ -627,10 +632,10 @@ public static class SceneBuilder
         // Stats
         Text sanTxt  = MakeText(canvas,"SanityStat",  "62%",  30, AMB_STA, V(.35f,.40f), V(.35f,.40f), Vector2.zero, new Vector2(120,40));
         MakeText(canvas,"SanityLbl",  "SANITY", 12, H("#6A5020"), V(.35f,.40f), V(.35f,.40f), new Vector2(0,-24), new Vector2(120,20));
-        Text timeTxt = MakeText(canvas,"TimeStat",    "0:00", 30, AMB_STA, V(.5f,.40f),  V(.5f,.40f),  Vector2.zero, new Vector2(120,40));
-        MakeText(canvas,"TimeLbl",    "TIME",   12, H("#6A5020"), V(.5f,.40f),  V(.5f,.40f),  new Vector2(0,-24), new Vector2(120,20));
-        Text enmTxt  = MakeText(canvas,"EnemyStat",   "0 / 4",30, AMB_STA, V(.65f,.40f), V(.65f,.40f), Vector2.zero, new Vector2(120,40));
-        MakeText(canvas,"EnemyLbl",   "ENEMIES",12, H("#6A5020"), V(.65f,.40f), V(.65f,.40f), new Vector2(0,-24), new Vector2(120,20));
+        Text timeTxt = MakeText(canvas,"TimeStat",    "0 s", 30, AMB_STA, V(.5f,.40f),  V(.5f,.40f),  Vector2.zero, new Vector2(120,40));
+        MakeText(canvas,"TimeLbl",    "SURVIVED",12, H("#6A5020"), V(.5f,.40f),  V(.5f,.40f),  new Vector2(0,-24), new Vector2(120,20));
+        Text enmTxt  = MakeText(canvas,"EnemyStat",   "0",   30, AMB_STA, V(.65f,.40f), V(.65f,.40f), Vector2.zero, new Vector2(120,40));
+        MakeText(canvas,"EnemyLbl",   "KILLED", 12, H("#6A5020"), V(.65f,.40f), V(.65f,.40f), new Vector2(0,-24), new Vector2(120,20));
 
         Button playBtn = MakeMenuButton(canvas, "PlayAgainBtn",
             "> PLAY AGAIN", H("#0F0C04"), H("#1A1508"), H("#4A3810"), H("#F0B830"),
@@ -641,12 +646,17 @@ public static class SceneBuilder
 
         GameObject mgr = new GameObject("WinManager");
         WinUI winUI         = mgr.AddComponent<WinUI>();
+        AudioSource winSfx  = mgr.AddComponent<AudioSource>();
+        winSfx.playOnAwake  = false;
+        winSfx.loop         = false;
         winUI.sanityText    = sanTxt;
         winUI.timeText      = timeTxt;
         winUI.enemiesText   = enmTxt;
         winUI.sanityBarFill = barFillImg;
         winUI.playAgainBtn  = playBtn;
         winUI.mainMenuBtn   = menuBtn;
+        winUI.winAudioSource = winSfx;
+        winUI.winClip        = LoadWinSoundClip();
 
         EditorSceneManager.SaveScene(scene, "Assets/Scenes/Win.unity");
     }
@@ -705,6 +715,8 @@ public static class SceneBuilder
         cs.referenceResolution = new Vector2(1920, 1080);
         cs.screenMatchMode     = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
         cs.matchWidthOrHeight  = 0.5f;
+        cs.referencePixelsPerUnit = 100f;
+        cs.dynamicPixelsPerUnit = 4f;
         go.AddComponent<GraphicRaycaster>();
         return (go.transform, go.GetComponent<RectTransform>());
     }
@@ -887,6 +899,7 @@ public static class SceneBuilder
     static Font GetFont()
     {
         Font f = Resources.Load<Font>("Cinzel");
+        if (f == null) f = Resources.GetBuiltinResource<Font>("Arial.ttf");
         if (f == null) f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         return f;
     }
@@ -900,6 +913,28 @@ public static class SceneBuilder
         if (bg != null) return bg;
 
         return AssetDatabase.LoadAssetAtPath<Sprite>("Packages/UnitEye/Resources/bg.png");
+    }
+
+    static AudioClip LoadGameOverSoundClip()
+    {
+        AudioClip clip = Resources.Load<AudioClip>("Audio/game-over-sound");
+        if (clip != null) return clip;
+
+        clip = Resources.Load<AudioClip>("game-over-sound");
+        if (clip != null) return clip;
+
+        return AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/game-over-sound.mp3");
+    }
+
+    static AudioClip LoadWinSoundClip()
+    {
+        AudioClip clip = Resources.Load<AudioClip>("Audio/win-sound");
+        if (clip != null) return clip;
+
+        clip = Resources.Load<AudioClip>("win-sound");
+        if (clip != null) return clip;
+
+        return AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/win-sound.mp3");
     }
 
     // ================================================================== Light2D via reflection

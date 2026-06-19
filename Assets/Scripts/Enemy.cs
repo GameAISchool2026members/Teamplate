@@ -8,6 +8,7 @@ public class Enemy : MonoBehaviour
 
     private float timeInLight = 0f;
     private bool isDying = false;
+    private bool killNotified = false;
     private Animator animator;
 
     void Awake()
@@ -34,6 +35,13 @@ public class Enemy : MonoBehaviour
     {
         isDying = true;
         Debug.Log("I am dying");
+
+        if (!killNotified)
+        {
+            killNotified = true;
+            EnemyKillTracker.RegisterKill();
+            GameManager.Instance?.NotifyEnemyKilled();
+        }
 
         if (animator != null)
         {

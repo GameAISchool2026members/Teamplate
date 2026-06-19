@@ -59,6 +59,9 @@ public class GameManager : MonoBehaviour
     {
         if (CurrentState != State.Playing) return;
         SetState(State.Ended);
+        GameSessionTimer.StopAndFreeze();
+        GameSessionTimer.CopyToResultData();
+        EnemyKillTracker.CopyToResultData();
         PopulateResult(LoseCause.Sanity); // cause unused for win
         SceneManager.LoadScene(SceneNames.Win);
     }
@@ -67,6 +70,9 @@ public class GameManager : MonoBehaviour
     {
         if (CurrentState != State.Playing) return;
         SetState(State.Ended);
+        GameSessionTimer.StopAndFreeze();
+        GameSessionTimer.CopyToResultData();
+        EnemyKillTracker.CopyToResultData();
         GameResultData.LoseCause = cause;
         PopulateResult(cause);
         SceneManager.LoadScene(SceneNames.GameOver);
@@ -79,6 +85,14 @@ public class GameManager : MonoBehaviour
     private void SetState(State newState)
     {
         CurrentState = newState;
+
+        if (newState == State.Playing)
+        {
+            EnemiesKilled = 0;
+            EnemyKillTracker.Reset();
+            GameSessionTimer.StartNewRun();
+        }
+
         if (introPanel != null)
             introPanel.SetActive(newState == State.Intro);
     }
@@ -86,8 +100,8 @@ public class GameManager : MonoBehaviour
     private void PopulateResult(LoseCause cause)
     {
         GameResultData.FinalSanity   = sanityManager != null ? sanityManager.CurrentSanity : 0f;
-        GameResultData.SurvivalTime  = _playTime;
-        GameResultData.EnemiesKilled = EnemiesKilled;
+        GameResultData.SurvivalTime  = Mathf.Max(_playTime, GameSessionTimer.GetElapsedSeconds());
+        GameResultData.EnemiesKilled = Mathf.Max(EnemiesKilled, EnemyKillTracker.GetKills());
         GameResultData.LoseCause     = cause;
     }
 }

@@ -1,22 +1,9 @@
-using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
+using UnityEngine.SceneManagement;
 
 public class ExitDoor : MonoBehaviour
 {
-    [Header("Win UI")]
-    public GameObject winPanel;
-    public TextMeshProUGUI winText;
-    public string winMessage = "You escaped!";
-
     private bool hasWon = false;
-
-    void Start()
-    {
-        if (winPanel != null)
-            winPanel.SetActive(false);
-    }
 
     void OnTriggerEnter2D(Collider2D other)
     {
@@ -24,22 +11,18 @@ public class ExitDoor : MonoBehaviour
         if (!other.CompareTag("Player")) return;
 
         hasWon = true;
-        ShowWinScreen();
+        LoadWinScene();
     }
 
-    void ShowWinScreen()
+    void LoadWinScene()
     {
-        if (winPanel != null)
-            winPanel.SetActive(true);
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.TriggerWin();
+            return;
+        }
 
-        if (winText != null)
-            winText.text = winMessage;
-
-        Time.timeScale = 0f;
-    }
-
-    void OnDestroy()
-    {
-        Time.timeScale = 1f;
+        string winScene = string.IsNullOrEmpty(SceneNames.Win) ? "Win" : SceneNames.Win;
+        SceneManager.LoadScene(winScene);
     }
 }

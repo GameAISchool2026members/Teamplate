@@ -18,6 +18,7 @@ public class EnemyAI : MonoBehaviour
 
     private float       _exposureTimer;
     private Rigidbody2D _rb;
+    private bool _dead;
 
     private void Awake()
     {
@@ -66,6 +67,10 @@ public class EnemyAI : MonoBehaviour
 
     private void Die()
     {
+        if (_dead) return;
+        _dead = true;
+
+        EnemyKillTracker.RegisterKill();
         GameManager.Instance?.NotifyEnemyKilled();
         // TODO: add death VFX/SFX here
         Destroy(gameObject);

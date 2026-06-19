@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 /// <summary>
 /// Drives the GameOver scene.
@@ -10,7 +13,7 @@ using UnityEngine.UI;
 public class GameOverUI : MonoBehaviour
 {
     [Header("Title")]
-    [Tooltip("'SANITY LOST' or 'DEVOURED' depending on cause of death.")]
+    [Tooltip("Main game over title text.")]
     public Text causeText;
 
     [Header("Stats")]
@@ -22,23 +25,36 @@ public class GameOverUI : MonoBehaviour
     public Button retryBtn;
     public Button mainMenuBtn;
 
+    [Header("Audio")]
+    [Tooltip("Sound played once when the GameOver scene opens.")]
+    public AudioClip gameOverClip;
+    public AudioSource gameOverAudioSource;
+    [Range(0f, 1f)]
+    public float gameOverVolume = 0.5f;
+
     private void Start()
     {
-        // Populate cause
+        PlayGameOverSound();
+
+        // Populate title
         if (causeText)
-            causeText.text = GameResultData.LoseCause == LoseCause.Sanity
-                ? "SANITY LOST"
-                : "DEVOURED";
+            causeText.text = "YOU DIED";
 
         // Populate stats
         if (sanityText)
             sanityText.text = Mathf.RoundToInt(GameResultData.FinalSanity) + "%";
 
         if (timeText)
-            timeText.text = FormatTime(GameResultData.SurvivalTime);
+        {
+            float elapsedSeconds = GameResultData.SurvivalTime > 0f
+                ? GameResultData.SurvivalTime
+                : GameSessionTimer.GetElapsedSeconds();
+
+            timeText.text = FormatSeconds(elapsedSeconds);
+        }
 
         if (enemiesText)
-            enemiesText.text = GameResultData.EnemiesKilled.ToString();
+            enemiesText.text = Mathf.Max(GameResultData.EnemiesKilled, EnemyKillTracker.GetKills()).ToString();
 
         // Wire buttons
         if (retryBtn)    retryBtn.onClick.AddListener(OnRetry);
@@ -48,10 +64,50 @@ public class GameOverUI : MonoBehaviour
     public void OnRetry()    => SceneManager.LoadScene(SceneNames.DemoLevel);
     public void OnMainMenu() => SceneManager.LoadScene(SceneNames.MainMenu);
 
-    private static string FormatTime(float seconds)
+    private static string FormatSeconds(float seconds)
     {
-        int m = (int)(seconds / 60f);
-        int s = (int)(seconds % 60f);
-        return $"{m}:{s:00}";
+        int totalSeconds = Mathf.Max(0, Mathf.RoundToInt(seconds));
+        return totalSeconds + " s";
+    }
+
+    private void PlayGameOverSound()
+    {
+        AudioClip clipToPlay = ResolveGameOverClip();
+        if (clipToPlay == null)
+            return;
+
+        AudioSource source = gameOverAudioSource;
+        if (source == null)
+            source = GetComponent<AudioSource>();
+        if (source == null)
+            source = gameObject.AddComponent<AudioSource>();
+
+        source.playOnAwake = false;
+        source.loop = false;
+        source.volume = Mathf.Clamp01(gameOverVolume);
+        source.clip = clipToPlay;
+        source.Play();
+    }
+
+    private AudioClip ResolveGameOverClip()
+    {
+        if (gameOverClip != null)
+            return gameOverClip;
+
+        AudioClip clip = Resources.Load<AudioClip>("Audio/game-over-sound");
+        if (clip != null)
+            return clip;
+
+        clip = Resources.Load<AudioClip>("game-over-sound");
+        if (clip != null)
+            return clip;
+
+#if UNITY_EDITOR
+        clip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/game-over-sound.mp3");
+        if (clip != null)
+            return clip;
+#endif
+
+        return null;
     }
 }
