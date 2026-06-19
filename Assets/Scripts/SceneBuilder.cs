@@ -74,7 +74,7 @@ public static class SceneBuilder
         Sprite sq = CreateWhiteSquare();
 
         BuildMainMenuScene(sq);
-        BuildEyeCalibrationScene(sq);
+        // Eye calibration now uses the UnitEye package scene (GazeCalibration).
         // DemoLevel is currently not used in runtime flow; keep existing GameScene instead.
         BuildGameOverScene(sq);
         BuildWinScene(sq);
@@ -103,7 +103,15 @@ public static class SceneBuilder
         var (canvas, cRect) = MakeCanvas();
 
         // Background
-        MakeImage(canvas, "BG", BG, V(0, 0), V(1, 1), Vector2.zero, Vector2.zero, 0);
+        Image bgImage = MakeImage(canvas, "BG", BG, V(0, 0), V(1, 1), Vector2.zero, Vector2.zero, 0);
+        Sprite bgSprite = LoadMainMenuBackgroundSprite();
+        if (bgSprite != null)
+        {
+            bgImage.sprite = bgSprite;
+            bgImage.color = Color.white;
+            bgImage.type = Image.Type.Simple;
+            bgImage.preserveAspect = false;
+        }
 
         // Corner decorations
         AddCorners(canvas, CORNER, 0);
@@ -649,7 +657,7 @@ public static class SceneBuilder
         EditorBuildSettings.scenes = new[]
         {
             new EditorBuildSettingsScene("Assets/Scenes/MainMenu.unity",       true),
-            new EditorBuildSettingsScene("Assets/Scenes/EyeCalibration.unity", true),
+            new EditorBuildSettingsScene("Packages/UnitEye/Scenes/GazeCalibration.unity", true),
             new EditorBuildSettingsScene("Assets/Scenes/GameScene.unity",      true),
             new EditorBuildSettingsScene("Assets/Scenes/GameOver.unity",       true),
             new EditorBuildSettingsScene("Assets/Scenes/Win.unity",            true),
@@ -881,6 +889,17 @@ public static class SceneBuilder
         Font f = Resources.Load<Font>("Cinzel");
         if (f == null) f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         return f;
+    }
+
+    static Sprite LoadMainMenuBackgroundSprite()
+    {
+        Sprite bg = Resources.Load<Sprite>("bg");
+        if (bg != null) return bg;
+
+        bg = Resources.Load<Sprite>("Background");
+        if (bg != null) return bg;
+
+        return AssetDatabase.LoadAssetAtPath<Sprite>("Packages/UnitEye/Resources/bg.png");
     }
 
     // ================================================================== Light2D via reflection
