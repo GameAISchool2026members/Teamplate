@@ -8,18 +8,18 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/MainMenu.unity
     guid: 58c4cc901c3d946e28199595f8a29c81
-  - enabled: 0
-    path: Packages/UnitEye/Scenes/GazeCalibration.unity
-    guid: 00000000000000000000000000000000
   - enabled: 1
     path: Assets/Scenes/GameScene.unity
     guid: 0cf7489bfe4c6486cb6205fb064f8a3d
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/GameOver.unity
     guid: 1819af6042f724b5f9719441bc635b8d
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/Win.unity
     guid: 718bf08bd834c4fc9aa1999534f4fca9
+  - enabled: 1
+    path: Assets/Scenes/GazeCalibration.unity
+    guid: 99af1cf85c825f14bb2a6f965e65f9fa
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
