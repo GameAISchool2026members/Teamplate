@@ -5,6 +5,9 @@ using UnityEngine.SceneManagement;
 
 public class EnemyMovement : MonoBehaviour
 {
+    [Header("Components")]
+    public Animator animator; // <--- ADDED: Animator reference
+
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 3f;
     [SerializeField] private float stoppingDistance = 0.12f;
@@ -33,7 +36,17 @@ public class EnemyMovement : MonoBehaviour
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        
+        // <--- ADDED: Auto-grab the animator if it's on the same object
+        if (animator == null) animator = GetComponent<Animator>(); 
+        
         TryFindPlayer();
+    }
+
+    // <--- ADDED: The Update loop for animations
+    private void Update() 
+    {
+        UpdateAnimations();
     }
 
     private void FixedUpdate()
@@ -55,6 +68,8 @@ public class EnemyMovement : MonoBehaviour
 
         FollowPath();
     }
+
+    // ... [TryFindPlayer, RebuildPath, FollowPath, GetObstacleAvoidance, GetBestSteeringPoint, CalculatePath, IsWalkable, GetNodeForPoint, GetNeighbours, GetDistance, GetLowestCostNode, RetracePath, OnCollisionEnter2D, and Node class remain EXACTLY the same] ...
 
     private void TryFindPlayer()
     {
@@ -389,6 +404,32 @@ public class EnemyMovement : MonoBehaviour
 
         if (!string.IsNullOrWhiteSpace(gameOverSceneName))
             SceneManager.LoadSceneAsync(gameOverSceneName);
+    }
+
+    // The Animation Logic
+    private void UpdateAnimations()
+    {
+        if (animator == null || rb == null) return;
+
+        Vector2 velocity = rb.linearVelocity;
+
+        // sqrMagnitude is a cheap way to check if it's moving at all (faster than Vector2.Distance)
+        // 0.01f is a tiny deadzone so it doesn't twitch when standing still
+        if (velocity.sqrMagnitude > 0.01f) 
+        {
+            animator.SetBool("isMoving", true);
+
+            // Normalized converts the speed into pure direction (between -1 and 1)
+            Vector2 direction = velocity.normalized;
+            
+            // Setting the parameters EXACTLY as they appear in your Animator screenshot
+            animator.SetFloat("moveX", direction.x);
+            animator.SetFloat("moveY", direction.y);
+        }
+        else
+        {
+            animator.SetBool("isMoving", false);
+        }
     }
 
     private sealed class Node
